@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ภารกิจนักคิด พิชิตปัญหา - เกมการเรียนรู้ ป.5</title>
+    <!-- Google Fonts for Cute Thai Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700&family=Mali:wght@500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #4A90E2;
+            --primary-dark: #357ABD;
+            --secondary: #FF9F43;
+            --success: #2ECC71;
+            --danger: #FF5252;
+            --bg-color: #F0F8FF;
+            --card-bg: #FFFFFF;
+            --text-color: #2C3E50;
+            --radius: 18px;
+            --shadow: 0 8px 20px rgba(0,0,0,0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Prompt', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            margin: 0;
+            padding: 12px;
+            background-color: var(--bg-color);
+            background-image: radial-gradient(#E1F0FF 2px, transparent 2px);
+            background-size: 24px 24px;
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 820px;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 4px solid #D0E3FF;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Header UI */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #EBF4FF;
+            padding: 12px 18px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+            border: 2px solid #CCE0FF;
+        }
+
+        .game-title-sm {
+            font-family: 'Mali', cursive;
+            font-size: 1.2rem;
+            color: var(--primary);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .score-badge {
+            background: #FFF3E0;
+            border: 2px solid #FFE0B2;
+            color: #E65100;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .sound-btn {
+            background: #FFFFFF;
+            border: 2px solid #CBD5E1;
+            border-radius: 50%;
+            width: 42px;
+            height: 42px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+
+        .sound-btn:active { transform: scale(0.9); }
+
+        /* Progress Bar */
+        .progress-wrapper {
+            margin-bottom: 20px;
+        }
+        
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #5A6A85;
+        }
+
+        .progress-bar-bg {
+            height: 16px;
+            background: #E2E8F0;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid #CBD5E1;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #4A90E2, #00D2FF);
+            transition: width 0.4s ease;
+            border-radius: 8px;
+        }
+
+        /* Mascot Banner */
+        .mascot-banner {
+            display: flex;
+            align-items: center;
+            background: #F0F9FF;
+            border: 2px dashed #BEE3F8;
+            padding: 14px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+            gap: 14px;
+        }
+
+        .mascot-svg {
+            width: 65px;
+            height: 65px;
+            flex-shrink: 0;
+        }
+
+        .mascot-dialog {
+            font-size: 1.05rem;
+            line-height: 1.5;
+            color: #2D3748;
+        }
+
+        /* Content Screens */
+        .screen { display: none; }
+        .screen.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Typography & Headings */
+        h1, h2, h3 {
+            font-family: 'Mali', cursive;
+            margin-top: 0;
+        }
+
+        .level-title {
+            color: var(--primary);
+            font-size: 1.4rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .scenario-box {
+            background: #FFF9E6;
+            border-left: 6px solid #FFC107;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        /* Options / Choice Grid */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            background: #FFFFFF;
+            border: 3px solid #E2E8F0;
+            padding: 14px 18px;
+            border-radius: 14px;
+            font-size: 1.05rem;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary);
+            background: #F4F8FF;
+            transform: translateY(-2px);
+        }
+
+        .option-btn.selected {
+            border-color: var(--primary);
+            background: #EBF3FF;
+        }
+
+        .option-btn.correct {
+            border-color: var(--success) !important;
+            background: #E8F8F0 !important;
+            color: #1E7E34;
+        }
+
+        .option-btn.wrong {
+            border-color: var(--danger) !important;
+            background: #FFEBEB !important;
+            color: #C53030;
+        }
+
+        /* Draggable & Sortable Lists */
+        .sortable-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .sort-item {
+            background: #FFFFFF;
+            border: 2px solid #CBD5E1;
+            padding: 12px 16px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: 600;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.04);
+            cursor: move;
+        }
+
+        .sort-item .drag-handle {
+            color: #A0AEC0;
+            font-size: 1.3rem;
+            margin-right: 10px;
+        }
+
+        .sort-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .btn-mini {
+            background: #EDF2F7;
+            border: 1px solid #CBD5E1;
+            border-radius: 6px;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn-mini:hover { background: #E2E8F0; }
+
+        /* Categorization / Grouping (Level 5) */
+        .category-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .category-box {
+            background: #F7FAFC;
+            border: 2px dashed #CBD5E1;
+            border-radius: 12px;
+            padding: 12px;
+            min-height: 140px;
+        }
+
+        .category-title {
+            font-weight: bold;
+            text-align: center;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #E2E8F0;
+            color: var(--primary-dark);
+        }
+
+        .task-pool {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            background: #EDF2F7;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            min-height: 60px;
+        }
+
+        .task-chip {
+            background: #FFFFFF;
+            border: 2px solid #4A90E2;
+            color: #2B6CB0;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: transform 0.15s;
+        }
+
+        .task-chip:active { transform: scale(0.95); }
+
+        /* Action Buttons */
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 14px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(74, 144, 226, 0.3);
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn:active { transform: translateY(0); }
+
+        .btn-success { background: var(--success); box-shadow: 0 4px 10px rgba(46, 204, 113, 0.3); }
+        .btn-success:hover { background: #27AE60; }
+
+        .btn-secondary { background: #718096; box-shadow: none; }
+        .btn-secondary:hover { background: #4A5568; }
+
+        /* Feedback Modal/Card */
+        .feedback-box {
+            display: none;
+            padding: 14px 18px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 1rem;
+            line-height: 1.5;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .feedback-box.correct {
+            display: block;
+            background: #DEF7EC;
+            border: 2px solid #31C48D;
+            color: #03543F;
+        }
+
+        .feedback-box.wrong {
+            display: block;
+            background: #FDE8E8;
+            border: 2px solid #F98080;
+            color: #9B1C1C;
+        }
+
+        /* Start & Result Screens */
+        .welcome-screen, .result-screen {
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .game-title {
+            font-size: 2.2rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 0px #E1F0FF;
+        }
+
+        .badge-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .badge-card {
+            background: #FFF9E6;
+            border: 2px solid #FFE082;
+            padding: 14px;
+            border-radius: 14px;
+            text-align: center;
+        }
+
+        .badge-icon { font-size: 2.5rem; margin-bottom: 6px; }
+        .badge-name { font-weight: bold; font-size: 0.95rem; color: #D97706; }
+
+        .summary-card {
+            background: #F0F9FF;
+            border: 2px solid #BAE6FD;
+            padding: 16px;
+            border-radius: 14px;
+            margin: 20px 0;
+            text-align: left;
+            font-size: 1.05rem;
+            line-height: 1.6;
+        }
+
+        /* Checkbox list styling for L3 */
+        .checkbox-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-item {
+            background: #FFFFFF;
+            border: 2px solid #E2E8F0;
+            padding: 12px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .checkbox-item:hover {
+            border-color: var(--primary);
+            background: #F8FAFC;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        /* Canvas for confetti */
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        @media (max-width: 600px) {
+            .game-container { padding: 16px; }
+            .game-title { font-size: 1.7rem; }
+            .mascot-banner { flex-direction: column; text-align: center; }
+            .option-btn { font-size: 0.95rem; padding: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="confetti-canvas"></canvas>
+
+    <div class="game-container">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="game-title-sm">
+                🤖 ภารกิจนักคิด พิชิตปัญหา
+            </div>
+            <div class="header-controls">
+                <div class="score-badge" id="score-display">คะแนน: 0</div>
+                <button class="sound-btn" id="sound-toggle" title="เปิด/ปิดเสียง">🔊</button>
+            </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-wrapper" id="progress-container">
+            <div class="progress-info">
+                <span id="progress-text">ด่านที่ 1 / 5</span>
+                <span id="progress-percent">0%</span>
+            </div>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progress-fill"></div>
+            </div>
+        </div>
+
+        <!-- Mascot Dialog Banner -->
+        <div class="mascot-banner" id="mascot-banner">
+            <!-- SVG Cute Mascot -->
+            <svg class="mascot-svg" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" fill="#4A90E2"/>
+                <rect x="25" y="25" width="50" height="40" rx="10" fill="#FFFFFF"/>
+                <circle cx="40" cy="40" r="6" fill="#2C3E50"/>
+                <circle cx="60" cy="40" r="6" fill="#2C3E50"/>
+                <path d="M 40 52 Q 50 62 60 52" stroke="#FF9F43" stroke-width="4" fill="none" stroke-linecap="round"/>
+                <line x1="50" y1="5" x2="50" y2="25" stroke="#4A90E2" stroke-width="4"/>
+                <circle cx="50" cy="5" r="6" fill="#FF9F43"/>
+            </svg>
+            <div class="mascot-dialog" id="mascot-text">
+                สวัสดีครับเพื่อน ๆ! ผมคือ "หุ่นยนต์น้อย" พร้อมจะไปฝึกคิดแยกปัญหากับผมหรือยังครับ?
+            </div>
+        </div>
+
+        <!-- ================= SCREEN 0: WELCOME ================= -->
+        <div id="screen-welcome" class="screen active welcome-screen">
+            <h1 class="game-title">🤖 ภารกิจนักคิด พิชิตปัญหา</h1>
+            <p style="font-size: 1.1rem; color: #4A5568; margin-bottom: 24px;">
+                เรียนรู้การแก้ปัญหาซับซ้อนด้วยแนวคิด <b>"การแยกปัญหา" (Decomposition)</b><br>
+                สนุกลุยผ่าน 5 ด่านท้าทาย + แบบทดสอบวัดระดับความเก่ง!
+            </p>
+            <div style="background: #EBF8FF; border: 2px solid #BEE3F8; padding: 16px; border-radius: 14px; margin-bottom: 24px; text-align: left;">
+                <h3 style="color: #2B6CB0; margin-bottom: 8px;">🎯 เป้าหมายการเรียนรู้:</h3>
+                <ul style="margin: 0; padding-left: 20px; color: #2D3748; line-height: 1.6;">
+                    <li>อธิบายความหมายของการแยกปัญหาได้</li>
+                    <li>ระบุปัญหาย่อยจากปัญหาใหญ่ได้</li>
+                    <li>เรียงลำดับขั้นตอนการแก้ปัญหาได้อย่างเป็นระบบ</li>
+                </ul>
+            </div>
+            <button class="btn btn-success" onclick="startGame()">🚀 เริ่มการผจญภัยกันเลย!</button>
+        </div>
+
+        <!-- ================= SCREEN 1: LEVEL 1 ================= -->
+        <div id="screen-level1" class="screen">
+            <div class="level-title">📍 ด่านที่ 1: รู้จักการแยกปัญหา</div>
+            <div class="scenario-box">
+                🎒 <b>สถานการณ์:</b> หุ่นยนต์น้อยต้องการจัดกระเป๋านักเรียนให้พร้อมไปโรงเรียนในวันพรุ่งนี้
+            </div>
+            <p style="font-weight: bold; margin-bottom: 12px;">ข้อใดคือตัวอย่างของ "การแยกปัญหา" ที่ถูกต้องที่สุด?</p>
+            
+            <div class="options-grid" id="l1-options">
+                <button class="option-btn" onclick="checkL1('A')">A. จัดกระเป๋าให้เสร็จโดยไม่คิดอะไร</button>
+                <button class="option-btn" onclick="checkL1('B')">B. แบ่งงานเป็น: ตรวจตารางเรียน → เตรียมหนังสือ → เตรียมสมุด → เตรียมอุปกรณ์ → ตรวจความเรียบร้อย</button>
+                <button class="option-btn" onclick="checkL1('C')">C. หยิบของทุกอย่างรอบตัวใส่กระเป๋า</button>
+                <button class="option-btn" onclick="checkL1('D')">D. ให้เพื่อนจัดกระเป๋าแทนทั้งหมด</button>
+            </div>
+
+            <div id="l1-feedback" class="feedback-box"></div>
+            <button id="l1-next" class="btn" style="display:none;" onclick="nextLevel(2)">ด่านถัดไป ➔</button>
+        </div>
+
+        <!-- ================= SCREEN 2: LEVEL 2 ================= -->
+        <div id="screen-level2" class="screen">
+            <div class="level-title">📍 ด่านที่ 2: แยกปัญหาในชีวิตประจำวัน</div>
+            <div class="scenario-box">
+                🥪 <b>สถานการณ์:</b> "มิน" ต้องการทำแซนด์วิชแสนอร่อยสำหรับมื้อเช้า
+            </div>
+            <p style="font-weight: bold; margin-bottom: 8px;">ช่วยมินเรียงลำดับขั้นตอนย่อยในการทำแซนด์วิชให้ถูกต้อง (ใช้ปุ่ม UP/DOWN หรือลากสลับตำแหน่ง):</p>
+            
+            <div class="sortable-list" id="l2-sortable">
+                <!-- Javascript will populate sorted items -->
+            </div>
+
+            <div id="l2-feedback" class="feedback-box"></div>
+            <button id="l2-check" class="btn" onclick="checkL2()">ตรวจคำตอบ</button>
+            <button id="l2-next" class="btn btn-success" style="display:none;" onclick="nextLevel(3)">ด่านถัดไป ➔</button>
+        </div>
+
+        <!-- ================= SCREEN 3: LEVEL 3 ================= -->
+        <div id="screen-level3" class="screen">
+            <div class="level-title">📍 ด่านที่ 3: ช่วยหุ่นยนต์จัดห้อง</div>
+            <div class="scenario-box">
+                🧹 <b>สถานการณ์:</b> ห้องของหุ่นยนต์รกมาก! เขาต้องการทำความสะอาดและจัดห้องให้เป็นระเบียบ
+            </div>
+            <p style="font-weight: bold; margin-bottom: 12px;">ติ๊กเลือกเฉพาะ "งานย่อยที่เกี่ยวข้องกับการทำความสะอาดและจัดห้อง" (เลือก 4 ข้อ):</p>
+            
+            <div class="checkbox-list" id="l3-checkboxes">
+                <label class="checkbox-item"><input type="checkbox" value="1"> 🧸 เก็บของเล่นใส่กล่อง</label>
+                <label class="checkbox-item"><input type="checkbox" value="2"> 📚 จัดหนังสือเข้าชั้น</label>
+                <label class="checkbox-item"><input type="checkbox" value="3"> 🗑️ ทิ้งขยะลงถัง</label>
+                <label class="checkbox-item"><input type="checkbox" value="4"> 🧽 เช็ดทำความสะอาดโต๊ะ</label>
+                <label class="checkbox-item"><input type="checkbox" value="5"> 📐 ทำการบ้านวิชาคณิตศาสตร์</label>
+                <label class="checkbox-item"><input type="checkbox" value="6"> 🪴 รดน้ำต้นไม้หน้าบ้าน</label>
+            </div>
+
+            <div id="l3-feedback" class="feedback-box"></div>
+            <button id="l3-check" class="btn" onclick="checkL3()">ตรวจคำตอบ</button>
+            <button id="l3-next" class="btn btn-success" style="display:none;" onclick="nextLevel(4)">ด่านถัดไป ➔</button>
+        </div>
+
+        <!-- ================= SCREEN 4: LEVEL 4 ================= -->
+        <div id="screen-level4" class="screen">
+            <div class="level-title">📍 ด่านที่ 4: ภารกิจเรียงลำดับการเตรียมตัว</div>
+            <div class="scenario-box">
+                ☀️ <b>สถานการณ์:</b> นักเรียนต้องการเตรียมตัวไปโรงเรียนในตอนเช้าอย่างเป็นระบบ
+            </div>
+            <p style="font-weight: bold; margin-bottom: 8px;">เรียงลำดับขั้นตอนตั้งแต่ตื่นนอนจนถึงไปโรงเรียนให้ถูกต้อง:</p>
+            
+            <div class="sortable-list" id="l4-sortable">
+                <!-- Javascript will populate -->
+            </div>
+
+            <div id="l4-feedback" class="feedback-box"></div>
+            <button id="l4-check" class="btn" onclick="checkL4()">ตรวจคำตอบ</button>
+            <button id="l4-next" class="btn btn-success" style="display:none;" onclick="nextLevel(5)">ด่านถัดไป ➔</button>
+        </div>
+
+        <!-- ================= SCREEN 5: LEVEL 5 ================= -->
+        <div id="screen-level5" class="screen">
+            <div class="level-title">📍 ด่านที่ 5: ภารกิจจัดงานวันวิทยาศาสตร์</div>
+            <div class="scenario-box">
+                🔬 <b>สถานการณ์:</b> ห้องเรียนจะจัดงานวันวิทยาศาสตร์ และนักเรียนต้องช่วยกันจัดเตรียมงานใหญ่ชิ้นนี้!
+            </div>
+            <p style="font-weight: bold; margin-bottom: 8px;">กดเลือกงานย่อยด้านบน แล้วกดจัดเข้ากลุ่มหมวดหมู่ให้เหมาะสม:</p>
+            
+            <div class="task-pool" id="l5-pool">
+                <!-- Javascript will populate task chips -->
+            </div>
+
+            <div class="category-container">
+                <div class="category-box" onclick="assignSelectedTask('place')">
+                    <div class="category-title">🎨 1. จัดเตรียมสถานที่</div>
+                    <div id="cat-place" class="task-pool" style="background:transparent; padding:4px;"></div>
+                </div>
+                <div class="category-box" onclick="assignSelectedTask('tools')">
+                    <div class="category-title">🧪 2. อุปกรณ์และป้าย</div>
+                    <div id="cat-tools" class="task-pool" style="background:transparent; padding:4px;"></div>
+                </div>
+                <div class="category-box" onclick="assignSelectedTask('manage')">
+                    <div class="category-title">📋 3. บริหารและตรวจงาน</div>
+                    <div id="cat-manage" class="task-pool" style="background:transparent; padding:4px;"></div>
+                </div>
+            </div>
+
+            <div id="l5-feedback" class="feedback-box"></div>
+            <button id="l5-check" class="btn" onclick="checkL5()">ตรวจคำตอบ</button>
+            <button id="l5-next" class="btn btn-success" style="display:none;" onclick="startQuiz()">ไปทำแบบทดสอบท้ายเกม ➔</button>
+        </div>
+
+        <!-- ================= SCREEN 6: QUIZ ================= -->
+        <div id="screen-quiz" class="screen">
+            <div class="level-title">📝 แบบทดสอบความรู้ท้ายเกม</div>
+            <p style="color:#718096;" id="quiz-num-text">ข้อที่ 1 / 5</p>
+            <div class="scenario-box" id="quiz-question-text" style="background:#F0F4FF; border-left-color:#4A90E2;">
+                <!-- Question text -->
+            </div>
+
+            <div class="options-grid" id="quiz-options">
+                <!-- Dynamic quiz options -->
+            </div>
+
+            <div id="quiz-feedback" class="feedback-box"></div>
+            <button id="quiz-next" class="btn btn-success" style="display:none;" onclick="nextQuizQuestion()">ข้อถัดไป ➔</button>
+        </div>
+
+        <!-- ================= SCREEN 7: RESULT ================= -->
+        <div id="screen-result" class="screen result-screen">
+            <h1 class="game-title">🎉 ภารกิจสำเร็จแล้ว! 🎉</h1>
+            <div style="font-size: 1.3rem; margin-bottom: 12px;" id="result-rank"></div>
+            <div style="font-size: 2.2rem; font-weight: bold; color: var(--primary); margin-bottom: 16px;" id="result-score">
+                0 / 50 คะแนน
+            </div>
+
+            <h3>🏅 เหรียญรางวัลที่คุณได้รับ</h3>
+            <div class="badge-grid" id="result-badges">
+                <!-- Badges -->
+            </div>
+
+            <div class="summary-card">
+                <h4 style="margin-top:0; color:var(--primary); font-size:1.1rem;">💡 สรุปความรู้: การแยกปัญหา (Decomposition)</h4>
+                <p style="margin-bottom:0;">
+                    <b>การแยกปัญหา</b> คือ การนำปัญหาใหญ่หรือภารกิจที่ซับซ้อน มาแบ่งออกเป็นปัญหาย่อยหรือขั้นตอนเล็ก ๆ เพื่อให้เราเข้าใจปัญหาและแก้ปัญหาได้ง่ายขึ้น เป็นพื้นฐานสำคัญของการคิดเชิงคำนวณ!
+                </p>
+            </div>
+
+            <div style="font-size: 1.1rem; color: #2E7D32; font-weight: bold; margin-bottom: 20px;">
+                🌟 เก่งมาก! ตอนนี้เธอรู้จักวิธีแยกปัญหาแล้ว ลองนำวิธีนี้ไปใช้กับการเรียนและชีวิตประจำวันดูนะ!
+            </div>
+
+            <button class="btn btn-success" onclick="resetGame()">🔄 เล่นใหม่อีกครั้ง</button>
+        </div>
+
+    </div>
+
+    <script>
+        /* ================= AUDIO SYNTHESIZER (Web Audio API) ================= */
+        let soundEnabled = true;
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) audioCtx = new AudioCtx();
+        }
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+            initAudio();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            const now = audioCtx.currentTime;
+
+            if (type === 'correct') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(523.25, now); // C5
+                osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+                osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
+                osc.frequency.setValueAtTime(1046.50, now + 0.3); // C6
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+                osc.start(now);
+                osc.stop(now + 0.5);
+            } else if (type === 'wrong') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.setValueAtTime(180, now + 0.15);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+                osc.start(now);
+                osc.stop(now + 0.4);
+            } else if (type === 'click') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, now);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+                osc.start(now);
+                osc.stop(now + 0.08);
+            } else if (type === 'win') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, now);
+                osc.frequency.setValueAtTime(659.25, now + 0.15);
+                osc.frequency.setValueAtTime(783.99, now + 0.3);
+                osc.frequency.setValueAtTime(1046.50, now + 0.45);
+                gain.gain.setValueAtTime(0.25, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+                osc.start(now);
+                osc.stop(now + 0.8);
+            }
+        }
+
+        document.getElementById('sound-toggle').addEventListener('click', () => {
+            soundEnabled = !soundEnabled;
+            document.getElementById('sound-toggle').innerText = soundEnabled ? '🔊' : '🔇';
+        });
+
+        /* ================= GAME STATE & DATA ================= */
+        let totalScore = 0;
+        let currentScreen = 'screen-welcome';
+        
+        // Level scoring tracks
+        let levelScores = { l1: 0, l2: 0, l3: 0, l4: 0, l5: 0, quiz: 0 };
+
+        // Level 2 Data
+        const l2CorrectOrder = [
+            "1. เตรียมขนมปัง",
+            "2. เตรียมผัก",
+            "3. เตรียมไส้แซนด์วิช",
+            "4. ใส่ไส้ลงบนขนมปัง",
+            "5. ประกบขนมปัง",
+            "6. จัดใส่จาน"
+        ];
+        let l2CurrentOrder = [];
+
+        // Level 4 Data
+        const l4CorrectOrder = [
+            "1. ตื่นนอน",
+            "2. อาบน้ำ",
+            "3. แต่งตัว",
+            "4. รับประทานอาหารเช้า",
+            "5. เตรียมกระเป๋า",
+            "6. ไปโรงเรียน"
+        ];
+        let l4CurrentOrder = [];
+
+        // Level 5 Data
+        const l5Tasks = [
+            { id: 1, text: "🎨 ตกแต่งห้อง", cat: "place" },
+            { id: 2, text: "🪑 เตรียมโต๊ะ", cat: "place" },
+            { id: 3, text: "🧪 เตรียมอุปกรณ์ทดลอง", cat: "tools" },
+            { id: 4, text: "🪧 ทำป้ายงาน", cat: "tools" },
+            { id: 5, text: "👥 แบ่งหน้าที่สมาชิก", cat: "manage" },
+            { id: 6, text: "🔍 ตรวจความเรียบร้อย", cat: "manage" }
+        ];
+        let selectedChipId = null;
+        let l5UserAssignments = {};
+
+        // Quiz Question Bank
+        const quizBank = [
+            {
+                q: "ข้อใดอธิบายการแยกปัญหา (Decomposition) ได้ถูกต้องที่สุด?",
+                options: [
+                    "A. ทำงานทุกอย่างพร้อมกันโดยไม่วางแผน",
+                    "B. แบ่งปัญหาใหญ่ให้เป็นปัญหาย่อยที่จัดการได้ง่ายขึ้น",
+                    "C. หลีกเลี่ยงการแก้ปัญหาที่ซับซ้อน",
+                    "D. ส่งต่อให้เพื่อนทำแทนทั้งหมด"
+                ],
+                ans: 1,
+                exp: "การแยกปัญหา คือการย่อยปัญหาใหญ่หรือภารกิจที่ซับซ้อน ออกเป็นขั้นตอนเล็ก ๆ เพื่อให้แก้ปัญหาได้ง่ายขึ้น"
+            },
+            {
+                q: "ประโยชน์หลักของการแยกปัญหาคือข้อใด?",
+                options: [
+                    "A. ช่วยให้เห็นขั้นตอนชัดเจนและวางแผนแก้ปัญหาได้ง่ายขึ้น",
+                    "B. ทำให้งานเสร็จช้าลงกว่าเดิม",
+                    "C. ทำให้ไม่ต้องลงมือทำจริง",
+                    "D. ช่วยลดจำนวนสมาชิกในกลุ่ม"
+                ],
+                ans: 0,
+                exp: "การย่อยปัญหาช่วยให้เราเข้าใจโครงสร้างของงานและวางแผนจัดการทีละส่วนได้อย่างเป็นระบบ"
+            },
+            {
+                q: "หากต้องการ 'ทำความสะอาดบ้าน' ข้อใดไม่ใช่ปัญหาย่อยที่เกี่ยวข้อง?",
+                options: [
+                    "A. กวาดขยะบนพื้น",
+                    "B. ถูพื้นห้องรับแขก",
+                    "C. ทำการบ้านวิชาภาษาไทย",
+                    "D. เช็ดฝุ่นบนชั้นวางของ"
+                ],
+                ans: 2,
+                exp: "การทำการบ้านเป็นงานคนละส่วน ไม่ได้อยู่ในภารกิจการทำความสะอาดบ้าน"
+            },
+            {
+                q: "ขั้นตอนแรกของการใช้แนวคิดแยกปัญหาเมื่อเจอภารกิจใหญ่คืออะไร?",
+                options: [
+                    "A. ลงมือทำทันทีโดยไม่มองภาพรวม",
+                    "B. มองหาปัญหาย่อยหรือขั้นตอนย่อย ๆ ของงานนั้น",
+                    "C. ยอมแพ้เพราะงานยากเกินไป",
+                    "D. รอลูกพี่สั่งการอย่างเดียว"
+                ],
+                ans: 1,
+                exp: "เริ่มต้นด้วยการพิจารณาว่างานใหญ่นั้นประกอบด้วยขั้นตอนย่อย ๆ อะไรบ้าง"
+            },
+            {
+                q: "การจัดตารางเรียนก่อนจัดกระเป๋านักเรียน เป็นตัวอย่างของการใช้ทักษะใด?",
+                options: [
+                    "A. การคิดแยกปัญหาและเรียงลำดับขั้นตอน",
+                    "B. การสุ่มหยิบตามใจชอบ",
+                    "C. การจดจำรูปภาพ",
+                    "D. การคาดเดาอนาคต"
+                ],
+                ans: 0,
+                exp: "เป็นการนำแนวคิดการแยกปัญหาและเรียงลำดับขั้นตอนมาประยุกต์ใช้ในชีวิตประจำวัน"
+            }
+        ];
+        let currentQuizIdx = 0;
+        let quizScore = 0;
+
+        /* ================= SCREEN NAVIGATION ================= */
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            currentScreen = screenId;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function updateProgress(step, mascotMsg) {
+            const pct = Math.round((step / 6) * 100);
+            document.getElementById('progress-fill').style.width = pct + '%';
+            document.getElementById('progress-percent').innerText = pct + '%';
+            document.getElementById('progress-text').innerText = step <= 5 ? `ด่านที่ ${step} / 5` : 'แบบทดสอบ';
+            if (mascotMsg) document.getElementById('mascot-text').innerText = mascotMsg;
+            document.getElementById('score-display').innerText = `คะแนน: ${totalScore}`;
+        }
+
+        function startGame() {
+            playSound('click');
+            totalScore = 0;
+            initLevel2();
+            initLevel4();
+            initLevel5();
+            showScreen('screen-level1');
+            updateProgress(1, "ด่านแรกแล้วครับ! ลองช่วยผมคิดหน่อยว่า ข้อใดคือการแยกปัญหาที่ถูกต้อง?");
+        }
+
+        function nextLevel(lvlNum) {
+            playSound('click');
+            showScreen(`screen-level${lvlNum}`);
+            const msgs = {
+                2: "ยอดเยี่ยมมาก! ด่านที่ 2 นี้ มาช่วยกันเรียงลำดับขั้นตอนการทำแซนด์วิชกันครับ",
+                3: "เก่งมากๆ ครับ! ด่านที่ 3 ช่วยติ๊กเลือกงานย่อยที่เกี่ยวกับการจัดห้องให้ผมหน่อยนะ",
+                4: "ด่านที่ 4 แล้วครับ! มาช่วยกันเรียงลำดับขั้นตอนการเตรียมตัวไปโรงเรียนในตอนเช้ากัน",
+                5: "ด่านสุดท้ายแล้ว! ช่วยย่อยภารกิจงานวันวิทยาศาสตร์ลงกล่องหมวดหมู่ให้ถูกต้องนะ"
+            };
+            updateProgress(lvlNum, msgs[lvlNum]);
+        }
+
+        /* ================= LEVEL 1 LOGIC ================= */
+        function checkL1(choice) {
+            playSound('click');
+            const fb = document.getElementById('l1-feedback');
+            const btns = document.querySelectorAll('#l1-options .option-btn');
+            btns.forEach(b => b.classList.remove('selected', 'correct', 'wrong'));
+
+            if (choice === 'B') {
+                playSound('correct');
+                btns[1].classList.add('correct');
+                fb.className = "feedback-box correct";
+                fb.innerHTML = "✨ <b>ถูกต้องเก่งมาก!</b> เราแบ่งงานใหญ่อย่าง 'การจัดกระเป๋า' ให้เป็นงานย่อย ๆ เรียกว่า <b>การแยกปัญหา</b> ครับ (+10 คะแนน)";
+                document.getElementById('l1-next').style.display = 'inline-flex';
+                if (levelScores.l1 === 0) {
+                    levelScores.l1 = 10;
+                    totalScore += 10;
+                    updateProgress(1);
+                }
+                triggerConfetti();
+            } else {
+                playSound('wrong');
+                fb.className = "feedback-box wrong";
+                fb.innerHTML = "💡 <b>คำใบ้:</b> การแยกปัญหา คือการย่อยงานใหญ่ออกเป็นขั้นตอนเล็ก ๆ ที่ทำตามได้ง่ายขึ้น ลองเลือกใหม่อีกครั้งนะ!";
+            }
+        }
+
+        /* ================= LEVEL 2 LOGIC ================= */
+        function initLevel2() {
+            // Shuffle
+            l2CurrentOrder = [...l2CorrectOrder].sort(() => Math.random() - 0.5);
+            renderLevel2();
+        }
+
+        function renderLevel2() {
+            const container = document.getElementById('l2-sortable');
+            container.innerHTML = '';
+            l2CurrentOrder.forEach((item, idx) => {
+                const el = document.createElement('div');
+                el.className = 'sort-item';
+                el.innerHTML = `
+                    <span><span class="drag-handle">☰</span> ${item.replace(/^\d+\.\s*/, '')}</span>
+                    <div class="sort-actions">
+                        <button class="btn-mini" onclick="moveL2(${idx}, -1)">▲ ขึ้น</button>
+                        <button class="btn-mini" onclick="moveL2(${idx}, 1)">▼ ลง</button>
+                    </div>
+                `;
+                container.appendChild(el);
+            });
+        }
+
+        function moveL2(idx, dir) {
+            playSound('click');
+            const newIdx = idx + dir;
+            if (newIdx < 0 || newIdx >= l2CurrentOrder.length) return;
+            const temp = l2CurrentOrder[idx];
+            l2CurrentOrder[idx] = l2CurrentOrder[newIdx];
+            l2CurrentOrder[newIdx] = temp;
+            renderLevel2();
+        }
+
+        function checkL2() {
+            playSound('click');
+            const fb = document.getElementById('l2-feedback');
+            let isCorrect = true;
+
+            for (let i = 0; i < l2CurrentOrder.length; i++) {
+                if (l2CurrentOrder[i] !== l2CorrectOrder[i]) {
+                    isCorrect = false;
+                    break;
+                }
+            }
+
+            if (isCorrect) {
+                playSound('correct');
+                fb.className = "feedback-box correct";
+                fb.innerHTML = "✨ <b>เก่งมากครับ!</b> ปัญหาใหญ่คือการทำแซนด์วิช เราสามารถย่อยเป็นขั้นตอนลำดับ 1-6 ได้อย่างถูกต้อง (+10 คะแนน)";
+                document.getElementById('l2-check').style.display = 'none';
+                document.getElementById('l2-next').style.display = 'inline-flex';
+                if (levelScores.l2 === 0) {
+                    levelScores.l2 = 10;
+                    totalScore += 10;
+                    updateProgress(2);
+                }
+                triggerConfetti();
+            } else {
+                playSound('wrong');
+                fb.className = "feedback-box wrong";
+                fb.innerHTML = "💡 <b>คำใบ้:</b> ลองคิดดูว่า เราควรเตรียมวัตถุดิบ (ขนมปัง/ผัก/ไส้) ก่อน แล้วค่อยประกบและจัดใส่จานเป็นขั้นตอนสุดท้ายนะ!";
+            }
+        }
+
+        /* ================= LEVEL 3 LOGIC ================= */
+        function checkL3() {
+            playSound('click');
+            const boxes = document.querySelectorAll('#l3-checkboxes input[type="checkbox"]');
+            const selected = Array.from(boxes).filter(b => b.checked).map(b => b.value);
+            const correctSet = ['1', '2', '3', '4'];
+            const fb = document.getElementById('l3-feedback');
+
+            const isExact = selected.length === 4 && selected.every(val => correctSet.includes(val));
+
+            if (isExact) {
+                playSound('correct');
+                fb.className = "feedback-box correct";
+                fb.innerHTML = "✨ <b>ยอดเยี่ยม!</b> คุณเลือกเฉพาะงานย่อยที่เกี่ยวกับการจัดห้อง (เก็บของเล่น, จัดหนังสือ, ทิ้งขยะ, เช็ดโต๊ะ) ได้ถูกต้อง (+10 คะแนน)";
+                document.getElementById('l3-check').style.display = 'none';
+                document.getElementById('l3-next').style.display = 'inline-flex';
+                if (levelScores.l3 === 0) {
+                    levelScores.l3 = 10;
+                    totalScore += 10;
+                    updateProgress(3);
+                }
+                triggerConfetti();
+            } else {
+                playSound('wrong');
+                fb.className = "feedback-box wrong";
+                fb.innerHTML = "💡 <b>คำใบ้:</b> การทำการบ้านและรดน้ำต้นไม้ ไม่ใช่งานย่อยในการทำความสะอาดห้องครับ ลองติ๊กเลือกใหม่อีกครั้งนะ!";
+            }
+        }
+
+        /* ================= LEVEL 4 LOGIC ================= */
+        function initLevel4() {
+            l4CurrentOrder = [...l4CorrectOrder].sort(() => Math.random() - 0.5);
+            renderLevel4();
+        }
+
+        function renderLevel4() {
+            const container = document.getElementById('l4-sortable');
+            container.innerHTML = '';
+            l4CurrentOrder.forEach((item, idx) => {
+                const el = document.createElement('div');
+                el.className = 'sort-item';
+                el.innerHTML = `
+                    <span><span class="drag-handle">☰</span> ${item.replace(/^\d+\.\s*/, '')}</span>
+                    <div class="sort-actions">
+                        <button class="btn-mini" onclick="moveL4(${idx}, -1)">▲ ขึ้น</button>
+                        <button class="btn-mini" onclick="moveL4(${idx}, 1)">▼ ลง</button>
+                    </div>
+                `;
+                container.appendChild(el);
+            });
+        }
+
+        function moveL4(idx, dir) {
+            playSound('click');
+            const newIdx = idx + dir;
+            if (newIdx < 0 || newIdx >= l4CurrentOrder.length) return;
+            const temp = l4CurrentOrder[idx];
+            l4CurrentOrder[idx] = l4CurrentOrder[newIdx];
+            l4CurrentOrder[newIdx] = temp;
+            renderLevel4();
+        }
+
+        function checkL4() {
+            playSound('click');
+            const fb = document.getElementById('l4-feedback');
+            let isCorrect = true;
+
+            for (let i = 0; i < l4CurrentOrder.length; i++) {
+                if (l4CurrentOrder[i] !== l4CorrectOrder[i]) {
+                    isCorrect = false;
+                    break;
+                }
+            }
+
+            if (isCorrect) {
+                playSound('correct');
+                fb.className = "feedback-box correct";
+                fb.innerHTML = "✨ <b>ยอดเยี่ยม!</b> การย่อยงานและเรียงลำดับเวลาตอนเช้า (ตื่นนอน ➔ อาบน้ำ ➔ แต่งตัว ➔ กินข้าว ➔ เตรียมกระเป๋า ➔ ไปโรงเรียน) ช่วยให้เราจัดการชีวิตได้ง่ายขึ้นมาก (+10 คะแนน)";
+                document.getElementById('l4-check').style.display = 'none';
+                document.getElementById('l4-next').style.display = 'inline-flex';
+                if (levelScores.l4 === 0) {
+                    levelScores.l4 = 10;
+                    totalScore += 10;
+                    updateProgress(4);
+                }
+                triggerConfetti();
+            } else {
+                playSound('wrong');
+                fb.className = "feedback-box wrong";
+                fb.innerHTML = "💡 <b>คำใบ้:</b> เริ่มต้นจาก ตื่นนอน ➔ อาบน้ำ ➔ แต่งตัว... แล้วลองทบทวนลำดับถัดไปดูครับ!";
+            }
+        }
+
+        /* ================= LEVEL 5 LOGIC ================= */
+        function initLevel5() {
+            selectedChipId = null;
+            l5UserAssignments = {};
+            renderLevel5Pool();
+            document.getElementById('cat-place').innerHTML = '';
+            document.getElementById('cat-tools').innerHTML = '';
+            document.getElementById('cat-manage').innerHTML = '';
+        }
+
+        function renderLevel5Pool() {
+            const pool = document.getElementById('l5-pool');
+            pool.innerHTML = '';
+            l5Tasks.forEach(task => {
+                if (!l5UserAssignments[task.id]) {
+                    const chip = document.createElement('div');
+                    chip.className = `task-chip ${selectedChipId === task.id ? 'selected' : ''}`;
+                    chip.innerText = task.text;
+                    chip.onclick = (e) => {
+                        e.stopPropagation();
+                        playSound('click');
+                        selectedChipId = selectedChipId === task.id ? null : task.id;
+                        renderLevel5Pool();
+                    };
+                    pool.appendChild(chip);
+                }
+            });
+        }
+
+        function assignSelectedTask(category) {
+            if (!selectedChipId) return;
+            playSound('click');
+            l5UserAssignments[selectedChipId] = category;
+            const taskId = selectedChipId;
+            selectedChipId = null;
+
+            // Render Chip inside category
+            const taskObj = l5Tasks.find(t => t.id === taskId);
+            const targetBox = document.getElementById(`cat-${category}`);
+            
+            const chip = document.createElement('div');
+            chip.className = 'task-chip';
+            chip.style.background = '#EBF8FF';
+            chip.innerText = `${taskObj.text} ❌`;
+            chip.onclick = (e) => {
+                e.stopPropagation();
+                playSound('click');
+                delete l5UserAssignments[taskId];
+                chip.remove();
+                renderLevel5Pool();
+            };
+            targetBox.appendChild(chip);
+
+            renderLevel5Pool();
+        }
+
+        function checkL5() {
+            playSound('click');
+            const fb = document.getElementById('l5-feedback');
+            
+            if (Object.keys(l5UserAssignments).length < 6) {
+                playSound('wrong');
+                fb.className = "feedback-box wrong";
+                fb.innerHTML = "💡 โปรดจัดกลุ่มงานย่อยให้ครบทั้ง 6 รายการก่อนกดตรวจคำตอบครับ!";
+                return;
+            }
+
+            let correctCount = 0;
+            l5Tasks.forEach(task => {
+                if (l5UserAssignments[task.id] === task.cat) {
+                    correctCount++;
+                }
+            });
+
+            if (correctCount === 6) {
+                playSound('correct');
+                fb.className = "feedback-box correct";
+                fb.innerHTML = "✨ <b>สุดยอดมือโปร!</b> คุณจัดกลุ่มงานย่อยของงานวันวิทยาศาสตร์ได้อย่างสมบูรณ์แบบ (+10 คะแนน)";
+                document.getElementById('l5-check').style.display = 'none';
+                document.getElementById('l5-next').style.display = 'inline-flex';
+                if (levelScores.l5 === 0) {
+                    levelScores.l5 = 10;
+                    totalScore += 10;
+                    updateProgress(5);
+                }
+                triggerConfetti();
+            } else {
+                playSound('wrong');
+                fb.className = "feedback-box wrong";
+                fb.innerHTML = `💡 คุณจัดกลุ่มถูกต้อง ${correctCount}/6 ข้อ ลองกดที่การ์ดเพื่อดึงกลับมาแก้ไขใหม่อีกครั้งนะ!`;
+            }
+        }
+
+        /* ================= QUIZ LOGIC ================= */
+        function startQuiz() {
+            playSound('click');
+            currentQuizIdx = 0;
+            quizScore = 0;
+            showScreen('screen-quiz');
+            renderQuizQuestion();
+        }
+
+        function renderQuizQuestion() {
+            const qData = quizBank[currentQuizIdx];
+            document.getElementById('quiz-num-text').innerText = `ข้อที่ ${currentQuizIdx + 1} / ${quizBank.length}`;
+            document.getElementById('quiz-question-text').innerText = qData.q;
+            document.getElementById('quiz-feedback').style.display = 'none';
+            document.getElementById('quiz-next').style.display = 'none';
+
+            const container = document.getElementById('quiz-options');
+            container.innerHTML = '';
+
+            qData.options.forEach((optText, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = optText;
+                btn.onclick = () => answerQuiz(idx);
+                container.appendChild(btn);
+            });
+
+            updateProgress(5, `แบบทดสอบท้ายเกม ข้อที่ ${currentQuizIdx + 1}`);
+        }
+
+        function answerQuiz(selectedIdx) {
+            playSound('click');
+            const qData = quizBank[currentQuizIdx];
+            const btns = document.querySelectorAll('#quiz-options .option-btn');
+            btns.forEach(b => b.disabled = true);
+
+            const fb = document.getElementById('quiz-feedback');
+
+            if (selectedIdx === qData.ans) {
+                playSound('correct');
+                btns[selectedIdx].classList.add('correct');
+                quizScore += 10; // 10 points per question in bank verify
+                fb.className = "feedback-box correct";
+                fb.innerHTML = `✨ <b>ถูกต้อง!</b> ${qData.exp}`;
+            } else {
+                playSound('wrong');
+                btns[selectedIdx].classList.add('wrong');
+                btns[qData.ans].classList.add('correct');
+                fb.className = "feedback-box wrong";
+                fb.innerHTML = `💡 <b>ยังไม่ถูกต้อง</b> ${qData.exp}`;
+            }
+
+            document.getElementById('quiz-next').style.display = 'inline-flex';
+        }
+
+        function nextQuizQuestion() {
+            playSound('click');
+            currentQuizIdx++;
+            if (currentQuizIdx < quizBank.length) {
+                renderQuizQuestion();
+            } else {
+                showResultScreen();
+            }
+        }
+
+        /* ================= RESULT SCREEN LOGIC ================= */
+        function showResultScreen() {
+            playSound('win');
+            showScreen('screen-result');
+            
+            // Total score calculation (Max 50 points based on levels + quiz mastery scaling)
+            // Level 1-5 = 50 pts
+            const finalScore = totalScore;
+            document.getElementById('result-score').innerText = `${finalScore} / 50 คะแนน`;
+
+            // Score Tier Evaluation
+            let rankText = "";
+            if (finalScore >= 45) {
+                rankText = "🏆 <b>ระดับ: นักคิดแก้ปัญหามือโปร</b>";
+            } else if (finalScore >= 35) {
+                rankText = "⭐ <b>ระดับ: นักคิดเก่งมาก</b>";
+            } else if (finalScore >= 25) {
+                rankText = "👍 <b>ระดับ: นักคิดฝึกหัด</b>";
+            } else {
+                rankText = "🌱 <b>ระดับ: นักคิดกำลังพัฒนา</b>";
+            }
+            document.getElementById('result-rank').innerHTML = rankText;
+
+            // Badges
+            const badgeContainer = document.getElementById('result-badges');
+            badgeContainer.innerHTML = `
+                <div class="badge-card">
+                    <div class="badge-icon">🏅</div>
+                    <div class="badge-name">แยกปัญหาเก่ง</div>
+                </div>
+                <div class="badge-card">
+                    <div class="badge-icon">🧩</div>
+                    <div class="badge-name">นักต่อจิ๊กซอว์ปัญหา</div>
+                </div>
+                <div class="badge-card">
+                    <div class="badge-icon">🚀</div>
+                    <div class="badge-name">นักคิดตัวน้อย</div>
+                </div>
+            `;
+
+            updateProgress(6, "ยินดีด้วยครับ! คุณผ่านการทดสอบและได้เป็นนักคิดแก้ปัญหาแล้ว!");
+            triggerConfetti();
+        }
+
+        function resetGame() {
+            playSound('click');
+            totalScore = 0;
+            levelScores = { l1: 0, l2: 0, l3: 0, l4: 0, l5: 0, quiz: 0 };
+            document.getElementById('l1-next').style.display = 'none';
+            document.getElementById('l1-feedback').style.display = 'none';
+            document.querySelectorAll('#l1-options .option-btn').forEach(b => b.className = 'option-btn');
+            
+            document.getElementById('l2-check').style.display = 'inline-flex';
+            document.getElementById('l2-next').style.display = 'none';
+            document.getElementById('l2-feedback').style.display = 'none';
+
+            document.getElementById('l3-check').style.display = 'inline-flex';
+            document.getElementById('l3-next').style.display = 'none';
+            document.getElementById('l3-feedback').style.display = 'none';
+            document.querySelectorAll('#l3-checkboxes input').forEach(c => c.checked = false);
+
+            document.getElementById('l4-check').style.display = 'inline-flex';
+            document.getElementById('l4-next').style.display = 'none';
+            document.getElementById('l4-feedback').style.display = 'none';
+
+            document.getElementById('l5-check').style.display = 'inline-flex';
+            document.getElementById('l5-next').style.display = 'none';
+            document.getElementById('l5-feedback').style.display = 'none';
+
+            startGame();
+        }
+
+        /* ================= CONFETTI EFFECT ================= */
+        function triggerConfetti() {
+            const canvas = document.getElementById('confetti-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const particles = [];
+            const colors = ['#4A90E2', '#FF9F43', '#2ECC71', '#FF5252', '#F1C40F', '#9B59B6'];
+
+            for (let i = 0; i < 60; i++) {
+                particles.push({
+                    x: canvas.width / 2,
+                    y: canvas.height / 2,
+                    vx: (Math.random() - 0.5) * 12,
+                    vy: (Math.random() - 0.7) * 12,
+                    size: Math.random() * 8 + 4,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    life: 100
+                });
+            }
+
+            function render() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let alive = false;
+
+                particles.forEach(p => {
+                    if (p.life > 0) {
+                        alive = true;
+                        p.x += p.vx;
+                        p.y += p.vy;
+                        p.vy += 0.25; // gravity
+                        p.life--;
+                        ctx.fillStyle = p.color;
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                });
+
+                if (alive) requestAnimationFrame(render);
+            }
+            render();
+        }
+    </script>
+</body>
+</html>
